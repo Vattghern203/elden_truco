@@ -1,8 +1,8 @@
-import { Config } from "./types/Config"
-import { Player } from "./types/Player"
+import { Config } from "../types/Config"
+import { Player } from "../types/Player"
 
-import { SUITS, VALUES } from "./constants"
-import { Card } from "./types/Card"
+import { SUITS, VALUES } from "../constants"
+import { Card } from "../types/Card"
 
 function drawCard(cards) {
     return cards.pop()
@@ -12,7 +12,7 @@ function drawNCards(cards, n) {
     return cards.splice(-n)
 }
 
-function divideCards(cards, numPlayers) {
+function divideCards(cards: Card[], numPlayers: number) {
     const players = Array.from({ length: numPlayers }, () => [])
 
     cards.forEach((card, index) => {
@@ -30,20 +30,28 @@ const DEFAULT_CONFIG: Config = {
 }
 
 class TrucoGame {
-    numPlayers: number
-    config: Config
-    players: Player[]
+    numPlayers?: number
+    config?: Config
+    players?: Player[]
+    deck?: Card[]
 
-    constructor(numPlayers, config = DEFAULT_CONFIG) {
+    constructor(numPlayers: number, config = DEFAULT_CONFIG, players: Player[] = []) {
         this.numPlayers = numPlayers
         this.config = config
         this.players = players
+        this.deck = this._combineCards()
     }
 
     createTable() {
 
         
-
+        const cards = this._combineCards()
+        this._shuffleCards(cards)
+        const players = divideCards(cards, this.numPlayers)
+        this.players = players.map((playerCards) => ({
+            cards: playerCards,
+            points: 0
+        }))
     }
 
     _combineCards() {
@@ -72,3 +80,8 @@ class TrucoGame {
         }
     }
 }
+
+
+const truco = new TrucoGame(2)
+
+console.log(truco._combineCards())
