@@ -4,25 +4,6 @@ import { Player } from "../types/Player"
 import { SUITS, VALUES } from "../constants"
 import { Card } from "../types/Card"
 
-function drawCard(cards) {
-    return cards.pop()
-}
-
-function drawNCards(cards, n) {
-    return cards.splice(-n)
-}
-
-function divideCards(cards: Card[], numPlayers: number) {
-    const players = Array.from({ length: numPlayers }, () => [])
-
-    cards.forEach((card, index) => {
-        const playerIndex = index % numPlayers
-        players[playerIndex].push(card)
-    })
-
-    return players
-}
-
 const DEFAULT_CONFIG: Config = {
     allowJoker: false,
     endsAt: 15,
@@ -30,33 +11,52 @@ const DEFAULT_CONFIG: Config = {
 }
 
 class TrucoGame {
-    numPlayers?: number
+    numPlayers: number
     config?: Config
-    players?: Player[]
-    deck?: Card[]
+    players: Player[]
+    deck: Card[]
 
     constructor(numPlayers: number, config = DEFAULT_CONFIG, players: Player[] = []) {
         this.numPlayers = numPlayers
         this.config = config
         this.players = players
-        this.deck = this._combineCards()
+        this.deck = this.combineCards()
     }
+
+    showDeck() {
+
+        return this.deck
+    }
+
+    showPlayers() { return this.players }
 
     createTable() {
 
-        
-        const cards = this._combineCards()
-        this._shuffleCards(cards)
-        const players = divideCards(cards, this.numPlayers)
-        this.players = players.map((playerCards) => ({
-            cards: playerCards,
-            points: 0
-        }))
+        const cards = this.combineCards()
+        this.shuffleCards(cards)
+        this.divideCards(cards, this.numPlayers)
+
+        console.log("Table Created")
+        this.players.forEach(player => {
+            console.log(player.name);
+            console.log(player.cards);
+        })
     }
 
-    _combineCards() {
+    public divideCards(cards: Card[], numPlayers: number) {
+
+        for (let i = 0; i < numPlayers; i++) {
+            this.players.push({
+                name: `Player ${i + 1}`,
+                cards: cards.splice(0, 3),
+                points: 0
+            })
+        }
+    }
+
+    public combineCards() {
         const cards: Card[] = []
-    
+
         SUITS.forEach(naipe => {
             VALUES.forEach(number => {
                 cards.push({
@@ -65,12 +65,12 @@ class TrucoGame {
                 })
             })
         })
-    
+
         return cards
     }
-    
 
-    _shuffleCards(cards: Card[]) {
+
+    public shuffleCards(cards: Card[]) {
 
         for (let i = cards.length - 1; i >= 0; i--) {
             let j = Math.floor(Math.random() * (i + 1));
@@ -79,9 +79,20 @@ class TrucoGame {
             cards[j] = temp;
         }
     }
+    
+    handleCardsPower(cardsOnTable: Card[]) {
+    }
 }
 
 
 const truco = new TrucoGame(2)
 
-console.log(truco._combineCards())
+console.log(truco.combineCards())
+
+truco.shuffleCards(truco.deck)
+
+truco.createTable()
+
+truco.showDeck()
+
+console.log(truco.showPlayers())
