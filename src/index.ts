@@ -1,8 +1,5 @@
-import { Config } from "../types/Config"
-import { Player } from "../types/Player"
-
-import { CARD_ORDER, CARD_POWERS, SUITS, VALUES } from "../constants"
-import { Card } from "../types/Card"
+import { CARD_ORDER, CARD_POWERS, SUITS, VALUES } from "./constants"
+import { Card, Config, Player } from "./types/"
 
 const DEFAULT_CONFIG: Config = {
     allowJoker: false,
