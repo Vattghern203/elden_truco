@@ -1,7 +1,7 @@
 import { Config } from "../types/Config"
 import { Player } from "../types/Player"
 
-import { SUITS, VALUES } from "../constants"
+import { CARD_ORDER, CARD_POWERS, SUITS, VALUES } from "../constants"
 import { Card } from "../types/Card"
 
 const DEFAULT_CONFIG: Config = {
@@ -28,7 +28,7 @@ class TrucoGame {
         return this.deck
     }
 
-    showPlayers() { return this.players }
+    showPlayers() { return this.players.map(player => player.cards) }
 
     createTable() {
 
@@ -61,7 +61,9 @@ class TrucoGame {
             VALUES.forEach(number => {
                 cards.push({
                     number: number,
-                    suit: naipe
+                    suit: naipe,
+                    order: CARD_ORDER.indexOf(number) + 1,
+                    value: CARD_POWERS.indexOf(number) + 1
                 })
             })
         })
@@ -69,6 +71,10 @@ class TrucoGame {
         return cards
     }
 
+    private getCardPower(card: Card) {
+
+
+    }
 
     public shuffleCards(cards: Card[]) {
 
@@ -78,6 +84,37 @@ class TrucoGame {
             cards[i] = cards[j];
             cards[j] = temp;
         }
+    }
+
+    public handleCardsOrder(cardOrder: number) {
+
+        if (cardOrder === 10) {
+
+            return 1
+        }
+
+        return cardOrder + 1
+    }
+
+    public handleTrumpCard() {
+
+        const flippedCard = this.deck.pop()
+
+        if (flippedCard) {
+
+
+            const cardToFind = Number(flippedCard?.number)
+    
+            console.log(CARD_ORDER[cardToFind])
+            console.log('O vira é:', flippedCard)
+    
+            const trumpCards = []
+    
+            trumpCards.push(this.deck.filter(card => card.order == this.handleCardsOrder(flippedCard.order)))
+    
+            console.log('As manilhas são:', trumpCards)
+        }
+
     }
     
     handleCardsPower(cardsOnTable: Card[]) {
@@ -91,8 +128,11 @@ console.log(truco.combineCards())
 
 truco.shuffleCards(truco.deck)
 
+truco.handleTrumpCard()
+
 truco.createTable()
 
 truco.showDeck()
 
-console.log(truco.showPlayers())
+
+//console.log(truco.showPlayers())

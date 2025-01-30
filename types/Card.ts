@@ -2,7 +2,8 @@ export type Card = {
 
     number: Value
     suit: Suit
-    value?: string
+    value?: number
+    order: number
 }
 
 export type Suit = 'hearts' | 'diamonds' | 'clubs' | 'spades'

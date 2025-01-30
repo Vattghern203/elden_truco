@@ -16,7 +16,7 @@ class TrucoGame {
     showDeck() {
         return this.deck;
     }
-    showPlayers() { return this.players; }
+    showPlayers() { return this.players.map(player => player.cards); }
     createTable() {
         const cards = this.combineCards();
         this.shuffleCards(cards);
@@ -42,11 +42,15 @@ class TrucoGame {
             constants_1.VALUES.forEach(number => {
                 cards.push({
                     number: number,
-                    suit: naipe
+                    suit: naipe,
+                    order: constants_1.CARD_ORDER.indexOf(number) + 1,
+                    value: constants_1.CARD_POWERS.indexOf(number) + 1
                 });
             });
         });
         return cards;
+    }
+    getCardPower(card) {
     }
     shuffleCards(cards) {
         for (let i = cards.length - 1; i >= 0; i--) {
@@ -56,12 +60,30 @@ class TrucoGame {
             cards[j] = temp;
         }
     }
+    handleCardsOrder(cardOrder) {
+        if (cardOrder === 10) {
+            return 1;
+        }
+        return cardOrder + 1;
+    }
+    handleTrumpCard() {
+        const flippedCard = this.deck.pop();
+        if (flippedCard) {
+            const cardToFind = Number(flippedCard === null || flippedCard === void 0 ? void 0 : flippedCard.number);
+            console.log(constants_1.CARD_ORDER[cardToFind]);
+            console.log('O vira é:', flippedCard);
+            const trumpCards = [];
+            trumpCards.push(this.deck.filter(card => card.order == this.handleCardsOrder(flippedCard.order)));
+            console.log('As manilhas são:', trumpCards);
+        }
+    }
     handleCardsPower(cardsOnTable) {
     }
 }
 const truco = new TrucoGame(2);
 console.log(truco.combineCards());
 truco.shuffleCards(truco.deck);
+truco.handleTrumpCard();
 truco.createTable();
 truco.showDeck();
-console.log(truco.showPlayers());
+//console.log(truco.showPlayers())
