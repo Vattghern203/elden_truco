@@ -1,5 +1,5 @@
 import { CARD_ORDER, CARD_POWERS, SUITS, VALUES } from "./constants"
-import { Card, Config, Player } from "./types/"
+import { Card, Config, Player, Suit } from "./types/"
 
 const DEFAULT_CONFIG: Config = {
     allowJoker: false,
@@ -7,26 +7,39 @@ const DEFAULT_CONFIG: Config = {
     gameType: 'paulista'
 }
 
-class TrucoGame {
+export class TrucoGame {
     numPlayers: number
     config?: Config
     players: Player[]
     deck: Card[]
+    trumpCard: Card[] | [] = []
 
     constructor(numPlayers: number, config = DEFAULT_CONFIG, players: Player[] = []) {
         this.numPlayers = numPlayers
         this.config = config
         this.players = players
         this.deck = this.combineCards()
-    }
+        this.trumpCard = []
+    }   
 
-    showDeck() {
+    /**
+     * @returns {Card[]} - Returns the deck of cards
+     */
+    showDeck(): Card[] {
 
         return this.deck
     }
 
-    showPlayers() { return this.players.map(player => player.cards) }
+    /**
+     * 
+     * @returns {Card[][]} - Returns the cards of each player
+     */
+    showPlayers(): Card[][] { return this.players.map(player => player.cards) }
 
+   
+    /**
+     * Creates the table with the cards and the players
+     */
     createTable() {
 
         const cards = this.combineCards()
@@ -40,6 +53,11 @@ class TrucoGame {
         })
     }
 
+    /**
+     * 
+     * @param {Card[]}  cards 
+     * @param {number} numPlayers 
+     */
     public divideCards(cards: Card[], numPlayers: number) {
 
         for (let i = 0; i < numPlayers; i++) {
@@ -51,7 +69,11 @@ class TrucoGame {
         }
     }
 
-    public combineCards() {
+    /**
+     * 
+     * @returns {Card[]} - Returns a deck with combined cards
+     */
+    public combineCards(): Card[] {
         const cards: Card[] = []
 
         SUITS.forEach(naipe => {
@@ -68,9 +90,18 @@ class TrucoGame {
         return cards
     }
 
-    private getCardPower(card: Card) {
+    private _redefineCardsPower(trumpCards: Card[]) {
 
+        const trumpCardSPowerList = {
+            diamonds: 14,
+            spades: 15,
+            hearts: 16,
+            clubs: 17
+        }
 
+        trumpCards.forEach(card => card.value = trumpCardSPowerList[card.suit])
+
+        console.log('Values changed', trumpCards)
     }
 
     public shuffleCards(cards: Card[]) {
@@ -99,17 +130,18 @@ class TrucoGame {
 
         if (flippedCard) {
 
-
             const cardToFind = Number(flippedCard?.number)
     
             console.log(CARD_ORDER[cardToFind])
             console.log('O vira é:', flippedCard)
     
-            const trumpCards = []
-    
-            trumpCards.push(this.deck.filter(card => card.order == this.handleCardsOrder(flippedCard.order)))
-    
+            const trumpCards: Card[] = this.deck.filter(card => card.order == this.handleCardsOrder(flippedCard.order))
+            
             console.log('As manilhas são:', trumpCards)
+            
+            this._redefineCardsPower(trumpCards)
+
+            console.log(trumpCards)
         }
 
     }
